@@ -29,10 +29,11 @@ ENGINE = InnoDB;
 -- Table `mydb`.`orders`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`orders` (
-  `order_number` INT UNSIGNED NOT NULL,
+  `order_id` INT UNSIGNED NOT NULL,
+  `order_number` VARCHAR(12) NOT NULL,
   `order_date` DATE NOT NULL,
   `customer_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`order_number`),
+  PRIMARY KEY (`order_id`),
   INDEX `fk_orders_customers_idx` (`customer_id` ASC) VISIBLE,
   CONSTRAINT `fk_orders_customers`
     FOREIGN KEY (`customer_id`)
@@ -43,16 +44,32 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `mydb`.`products`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`products` (
+  `product_id` INT NOT NULL,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`product_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `mydb`.`order_items`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`order_items` (
   `order_number` INT UNSIGNED NOT NULL,
-  `item_name` VARCHAR(50) NOT NULL,
-  `quantity` INT UNSIGNED NOT NULL,
+  `product_id` INT NOT NULL,
+  `quantity` DECIMAL(9,3) UNSIGNED NOT NULL,
   INDEX `fk_order_items_orders_idx` (`order_number` ASC) VISIBLE,
+  INDEX `fk_order_items_products_idx` (`product_id` ASC) VISIBLE,
   CONSTRAINT `fk_order_items_orders`
     FOREIGN KEY (`order_number`)
-    REFERENCES `mydb`.`orders` (`order_number`)
+    REFERENCES `mydb`.`orders` (`order_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_order_items_products`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `mydb`.`products` (`product_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
